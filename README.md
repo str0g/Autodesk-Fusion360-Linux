@@ -43,7 +43,7 @@ Script is going to wait for user input.
 Wine or kernel issue.
 Since kernel 6.1 mmc device is being reported as sda and Wine interprets it as partition.
 ```
-d:: -> /dev/sda wine created dvice?
+d:: -> /dev/sda
 ```
 
 ## Why this project started? 
