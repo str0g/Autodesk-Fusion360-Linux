@@ -52,7 +52,7 @@ Every one needs fast, easy to use and maintain solution which just works.
 ## Performance
 For best performance (25.02.2023) set fusion to run with opengl and do not apply any external solutions
 
-![sample-out](https://https://github.com/str0g/Autodesk-Fusion360-Linux/doc/graphic_driver.png)
+![sample-out](https://user-images.githubusercontent.com/219793/221354633-722b0a1f-4efc-42fb-b004-5e7a3cfdeb95.png)
 
 ## Tested on
 ArchLinux
