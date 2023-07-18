@@ -23,16 +23,14 @@ EOF
 function download_winetricks() {
     local wtricks="$DEFAULT_WORK_DIR_CACHE/winetricks"
     if [ ! -f "$wtricks" ]; then
-        curl https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks --output "$wtricks" &&
-
-        echo "###################"
-        echo -e "Patch winetricks manually until this pr is not merged!\nOther ways installation might fail!"
-        echo "https://github.com/Winetricks/winetricks/pull/2025"
-        echo "###################"
-        read  -n 1 -p "press any key to go further"
-
+        curl https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks --output "$wtricks"
         chmod +x "$wtricks"
     fi
+}
+
+function backup_fusion_installer() {
+    local fusion_installer="$DEFAULT_WORK_DIR_CACHE/$DEFAULT_FUSION_INSTALLER_NAME"
+    mv $fusion_installer "$fusion_installer_$(stat -c %w $fusion_installer)"
 }
 
 function download_fusion_installer() {
@@ -61,7 +59,7 @@ function install_fusion() {
   if [ ! -f "$fexec" ]; then
     WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" timeout -k 10m 9m wine "$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/Downloads/$DEFAULT_FUSION_INSTALLER_NAME"
     local fexec="$(find "$DEFAULT_WORK_DIR_WINE_PREFIX" -name Fusion360.exe)"
-    echo "WINEPREFIX=\"$DEFAULT_WORK_DIR_WINE_PREFIX\" wine \"$fexec\"" >> "$DEFAULT_BOX"
+    echo "WINEPREFIX=\"$DEFAULT_WORK_DIR_WINE_PREFIX\" FUSION_IDSDK=false wine \"$fexec\"" >> "$DEFAULT_BOX"
   fi
 }
 
@@ -81,12 +79,28 @@ function install_fusion_addons() {
     done
 }
 
+function install_action() {
+    init
+    download_winetricks
+    setup_winetricks
+    download_fusion_installer
+    install_fusion
+    install_fusion_addons
+    force_windows_version
+}
 
-init
-download_winetricks
-setup_winetricks
-download_fusion_installer
-install_fusion
-install_fusion_addons
-force_windows_version
+if [ $# -lt 1 ]; then
+  install_action
+fi
 
+case $1 in
+  install)
+    install_action
+    ;;
+  update)
+    backup_fusion_installer
+    download_fusion_installer
+    install_fusion
+    force_windows_version
+    ;;
+esac
