@@ -42,13 +42,15 @@ function download_fusion_installer() {
 }
 
 function force_windows_version() {
-  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine winecfg -v win10
+  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine winecfg -v win11
 }
 
 function setup_winetricks() {
     if [ ! -d "$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c" ]; then
         WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q sandbox &&
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q atmlib gdiplus corefonts cjkfonts dotnet452 msxml4 msxml6 vcrun2017 fontsmooth=rgb winhttp win10 &&
+        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q atmlib gdiplus corefonts cjkfonts dotnet452 msxml4 msxml6 vcrun2017 fontsmooth=rgb winhttp win11 &&
+        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" setup_vkd3d_proton install &&
+        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" setup_dxvk install &&
         WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q $DEFAULT_GFX &&
         force_windows_version
     fi
