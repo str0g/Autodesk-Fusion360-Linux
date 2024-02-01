@@ -5,7 +5,7 @@
 DEFAULT_WORK_DIR="$HOME/.fusion360"
 DEFAULT_WORK_DIR_CACHE="${DEFAULT_WORK_DIR}/cache"
 DEFAULT_WORK_DIR_WINE_PREFIX="${DEFAULT_WORK_DIR}/wineprefixes"
-DEFAULT_FUSION_INSTALLER_NAME=Fusion360installer.exe
+DEFAULT_FUSION_INSTALLER_NAME=Fusioninstaller.exe
 DEFAULT_GFX=dxvk
 DEFAULT_BOX="$DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh"
 
@@ -36,7 +36,7 @@ function backup_fusion_installer() {
 function download_fusion_installer() {
     local fusion_installer="$DEFAULT_WORK_DIR_CACHE/$DEFAULT_FUSION_INSTALLER_NAME"
     if [ ! -f "$fusion_installer" ]; then
-        curl https://dl.appstreaming.autodesk.com/production/installers/Fusion%20360%20Admin%20Install.exe --output $fusion_installer;
+        curl https://dl.appstreaming.autodesk.com/production/installers/Fusion%20Admin%20Install.exe --output $fusion_installer;
         cp "$fusion_installer" "$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/Downloads/"
     fi
 }
