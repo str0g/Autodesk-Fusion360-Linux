@@ -28,6 +28,15 @@ Script is going to create dir tree (path can be easily changed)
 [...]
 ```
 
+## Authorizatoin with fusion SSO
+1. After Installation run .fusion/wineprefixes/box-run
+2. Click in sing-in banner
+3. Default browser should open
+4. Login, after redirection clik with right mouse button to retry label which contains ```adskidmgr:/login?code=```
+5. Copy content to .fusion360/cache/login.txt
+6. Run script with ```auth``` parameter
+7. Fusion should login.
+
 ### Update
 move current directory to .fusion_backup and jump to Installation step
 
