@@ -20,6 +20,8 @@ Script is going to create dir tree (path can be easily changed)
 │   ├── AirfoilTools_win64.msi
 │   ├── Fusion360installer.exe
 │   ├── HelicalGear_win64.msi
+│   ├── login.txt
+│   ├── MicrosoftEdgeWebView2RuntimeInstallerX64.exe
 │   ├── OctoPrint_for_Fusion360-win64.msi
 │   ├── ParameterIO_win64.msi
 │   └── winetricks
@@ -40,20 +42,11 @@ Script is going to create dir tree (path can be easily changed)
 ### Update
 move current directory to .fusion_backup and jump to Installation step
 
+## Refresh installation
+Just remove wineprefixes directory
+
 ## Know issues
-### Cab installer manual intervention
-https://github.com/Winetricks/winetricks/pull/2025
-
-Script is going to wait for user input.
-
-*ArchLinux require patching.
-
-### Hard drive access issue
-Wine or kernel issue.
-Since kernel 6.1 mmc device is being reported as sda and Wine interprets it as partition.
-```
-d:: -> /dev/sda
-```
+Missing drawing elements on amd hardware - use galliumnine driver (default).
 
 ## Why this project started? 
 Every one needs fast, easy to use and maintain solution which just works.

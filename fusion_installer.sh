@@ -15,7 +15,7 @@ URL_FUSION=https://dl.appstreaming.autodesk.com/production/installers/Fusion%20A
 # galliumnine - dx9
 # dvxk dx9/10/11 (vulkan)
 # vkd3d - dx12 9 (vulkan)
-DEFAULT_GFX=dxvk
+DEFAULT_GFX=galliumnine
 DEFAULT_BOX="$DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh"
 
 function init() {
@@ -67,18 +67,13 @@ function force_windows_version() {
 
 function setup_winetricks() {
     if [ ! -d "$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c" ]; then
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q sandbox &&
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q atmlib gdiplus corefonts cjkfonts dotnet452 msxml4 msxml6 vcrun2022 fontsmooth=rgb winhttp win11 cabextract &&
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" setup_vkd3d_proton install &&
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" setup_dxvk install &&
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q $DEFAULT_GFX &&
+        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q sandbox win11 &&
+        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q $DEFAULT_GFX atmlib cjkfonts corefonts dotnet48 fontsmooth=rgb gdiplus msxml4 msxml6 vcrun2022 winhttp &&
         force_windows_version
     fi
-    #WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q --force vcrun2022
-    #cd "$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/Downloads/"
 }
 
-function dx9_setup() {
+function glx_config_generator() {
   local cfg=$DEFAULT_WORK_DIR_CACHE/NMachineSpecificOptions.xml
   cat > $cfg << EOL
 <?xml version="1.0" encoding="UTF-16" standalone="no" ?>
@@ -88,17 +83,35 @@ function dx9_setup() {
 </OptionGroups>
 EOL
 
-  roaming_="${ROOTFOLDER}/wineprefixes/default/drive_c/users/$USER/AppData/Roaming/Autodesk/Neutron Platform/Options"
-  local_="${ROOTFOLDER}/wineprefixes/default/drive_c/users/$USER/AppData/Local/Autodesk/Neutron Platform/Options"
-  data_="${ROOTFOLDER}/wineprefixes/default/drive_c/users/$USER/Application Data/Autodesk/Neutron Platform/Options"
+  roaming_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/AppData/Roaming/Autodesk/Neutron Platform/Options"
+  local_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/AppData/Local/Autodesk/Neutron Platform/Options"
+  data_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/Application Data/Autodesk/Neutron Platform/Options"
   #
-  mkdir -p roaming_
-  mkdir -p local_
-  mkdir -p data_
+  mkdir -p "$roaming_"
+  mkdir -p "$local_"
+  mkdir -p "$data_"
   #
-  cp $cfg roaming_
-  cp $cfg local_
-  cp $cfg data_
+  cp $cfg "$roaming_"
+  cp $cfg "$local_"
+  cp $cfg "$data_"
+}
+
+function glx_setup () {
+  case $DEFAULT_GFX in
+    dxvk) # direct 11 or opengl
+      # "VirtualDeviceGLCore"
+      glx_config_generator "VirtualDeviceDx11"
+      ;;
+    galliumnine) # directx 9
+      glx_config_generator "VirtualDeviceDx9"
+      ;;
+    vkd3d) # not supported yet
+      glx_config_generator "VirtualDeviceDx12"
+      ;;
+    *)
+      glx_config_generator "VirtualDeviceGLCore"
+      ;;
+  esac
 }
 
 function install_webview2() {
@@ -112,6 +125,7 @@ function install_fusion() {
     WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" timeout -k 10m 9m wine "$DOWNLOADS/$DEFAULT_FUSION_INSTALLER_NAME"
     local fexec="$(find "$DEFAULT_WORK_DIR_WINE_PREFIX" -name Fusion360.exe)"
     echo "WINEPREFIX=\"$DEFAULT_WORK_DIR_WINE_PREFIX\" wine \"$fexec\"" >> "$DEFAULT_BOX"
+    glx_setup
   fi
 }
 
@@ -162,6 +176,10 @@ function authorize() {
   cd -
 }
 
+function experimental() {
+    WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q dxvk
+}
+
 function install_action() {
     init
     download_winetricks
@@ -175,8 +193,12 @@ function install_action() {
     force_windows_version
 }
 
-function list_tricks () {
+function list_all_tricks () {
   WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" list-all
+}
+
+function list_installed_tricks () {
+  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" list-installed
 }
 
 if [ $# -lt 1 ]; then
@@ -193,13 +215,20 @@ case $1 in
     install_fusion
     force_windows_version
     ;;
-  list_tricks)
-    list_tricks
+  list_all_tricks)
+    list_all_tricks
+    ;;
+  list_installed_tricks)
+    list_installed_tricks
     ;;
   gen_opener)
     asdkidmgr_opener
     ;;
   auth)
     authorize
+    ;;
+  exp)
+    force_windows_version
+    #experimental
     ;;
 esac
