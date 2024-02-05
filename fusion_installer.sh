@@ -1,6 +1,10 @@
 #! /bin/bash
 # Author @Łukasz Buśko
-# Licence: non
+# Licence: MPLv2
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
 
 DEFAULT_WORK_DIR="$HOME/.fusion360"
 DEFAULT_WORK_DIR_CACHE="${DEFAULT_WORK_DIR}/cache"
@@ -15,6 +19,7 @@ URL_FUSION=https://dl.appstreaming.autodesk.com/production/installers/Fusion%20A
 # galliumnine - dx9
 # dvxk dx9/10/11 (vulkan)
 # vkd3d - dx12 9 (vulkan)
+# leave empty (opengl)
 DEFAULT_GFX=galliumnine
 DEFAULT_BOX="$DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh"
 
