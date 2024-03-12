@@ -17,11 +17,12 @@ URL_WEBVIEW2=https://github.com/aedancullen/webview2-evergreen-standalone-instal
 URL_FUSION=https://dl.appstreaming.autodesk.com/production/installers/Fusion%20Admin%20Install.exe
 # GFX options
 # galliumnine - dx9
-# dvxk dx9/10/11 (vulkan)
+# dxvk dx9/10/11 (vulkan)
 # vkd3d - dx12 9 (vulkan)
 # leave empty (opengl)
 DEFAULT_GFX=galliumnine
 DEFAULT_BOX="$DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh"
+FORCE_ARCH=win64
 
 function init() {
     mkdir -vp "${DEFAULT_WORK_DIR_CACHE}"
@@ -67,13 +68,13 @@ function download_fusion_installer() {
 }
 
 function force_windows_version() {
-  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine winecfg -v win11
+  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine winecfg -v win11
 }
 
 function setup_winetricks() {
     if [ ! -d "$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c" ]; then
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q sandbox win11 &&
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q $DEFAULT_GFX atmlib cjkfonts corefonts dotnet48 fontsmooth=rgb gdiplus msxml4 msxml6 vcrun2022 winhttp &&
+        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q sandbox win11 &&
+        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q $DEFAULT_GFX atmlib cjkfonts corefonts dotnet48 fontsmooth=rgb gdiplus msxml4 msxml6 vcrun2022 winhttp &&
         force_windows_version
     fi
 }
@@ -84,21 +85,15 @@ function glx_config_generator() {
 <?xml version="1.0" encoding="UTF-16" standalone="no" ?>
 <OptionGroups>
   <BootstrapOptionsGroup SchemaVersion="2" ToolTip="Special preferences that require the application to be restarted after a change." UserName="Bootstrap">
-    <driverOptionId ToolTip="The driver used to display the graphics" UserName="Graphics driver" Value="VirtualDeviceDx9"/></BootstrapOptionsGroup>
+    <driverOptionId ToolTip="The driver used to display the graphics" UserName="Graphics driver" Value="$1"/></BootstrapOptionsGroup>
 </OptionGroups>
 EOL
 
   roaming_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/AppData/Roaming/Autodesk/Neutron Platform/Options"
-  local_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/AppData/Local/Autodesk/Neutron Platform/Options"
-  data_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/Application Data/Autodesk/Neutron Platform/Options"
   #
   mkdir -p "$roaming_"
-  mkdir -p "$local_"
-  mkdir -p "$data_"
   #
   cp $cfg "$roaming_"
-  cp $cfg "$local_"
-  cp $cfg "$data_"
 }
 
 function glx_setup () {
@@ -121,15 +116,15 @@ function glx_setup () {
 
 function install_webview2() {
   force_windows_version
-  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "$DOWNLOADS/$DEFAULT_WEBVIEW_INSTALLER_NAME" /install
+  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "$DOWNLOADS/$DEFAULT_WEBVIEW_INSTALLER_NAME" /install
 }
 
 function install_fusion() {
   local fexec="$(find "$DEFAULT_WORK_DIR_WINE_PREFIX" -name Fusion360.exe)"
   if [ ! -f "$fexec" ]; then
-    WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" timeout -k 10m 9m wine "$DOWNLOADS/$DEFAULT_FUSION_INSTALLER_NAME"
+    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" timeout -k 10m 9m wine "$DOWNLOADS/$DEFAULT_FUSION_INSTALLER_NAME"
     local fexec="$(find "$DEFAULT_WORK_DIR_WINE_PREFIX" -name Fusion360.exe)"
-    echo "WINEPREFIX=\"$DEFAULT_WORK_DIR_WINE_PREFIX\" wine \"$fexec\"" >> "$DEFAULT_BOX"
+    echo "WINEARCH=$FORCE_ARCH WINEPREFIX=\"$DEFAULT_WORK_DIR_WINE_PREFIX\" wine \"$fexec\"" >> "$DEFAULT_BOX"
     glx_setup
   fi
 }
@@ -146,7 +141,7 @@ function install_fusion_addons() {
             curl https://github.com/cryinkfly/Autodesk-Fusion-360-for-Linux/raw/main/files/extensions/$obj --output "$tmp"
         fi
         cp "$tmp" "$dl"
-        WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine msiexec /i "$dl"
+        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine msiexec /i "$dl"
     done
 }
 
@@ -164,11 +159,13 @@ local desktop_file="$DEFAULT_WORK_DIR_CACHE/asdkidmgr_opener.desktop"
 [Desktop Entry]
 Type=Application
 Name=adskidmgr Scheme Handler
-Exec=env WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine C:\\\\Program\\ Files\\\\Autodesk\\\\webdeploy\\\\production\\\\$(get_production_id)\\\\Autodesk Identity Manager\\\\AdskIdentityManager.exe %u
+Exec=env WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "C:\Program Files\Autodesk\webdeploy\production\"$(get_production_id)"\Autodesk Identity Manager\AdskIdentityManager.exe" %u
 StartupNotify=false
 MimeType=x-scheme-handler/adskidmgr;
 EOL
 xdg-mime default adskidmgr-opener.desktop x-scheme-handler/adskidmgr
+  mkdir -p .local/share/Autodesk
+  cp $desktop_file .local/share/autodesk/
   fi
 }
 
@@ -177,12 +174,12 @@ function authorize() {
   local login=$(cat "$DEFAULT_WORK_DIR_CACHE/login.txt")
   local exec_path=$(find $DEFAULT_WORK_DIR_WINE_PREFIX -name $bin_name -exec dirname {} \;)
   cd "$exec_path"
-  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine $bin_name $login
+  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine $bin_name $login
   cd -
 }
 
 function experimental() {
-    WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q dxvk
+    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q dxvk
 }
 
 function install_action() {
@@ -199,11 +196,11 @@ function install_action() {
 }
 
 function list_all_tricks () {
-  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" list-all
+  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" list-all
 }
 
 function list_installed_tricks () {
-  WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" list-installed
+  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" list-installed
 }
 
 if [ $# -lt 1 ]; then
