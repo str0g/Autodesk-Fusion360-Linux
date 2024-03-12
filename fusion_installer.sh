@@ -89,9 +89,11 @@ function glx_config_generator() {
 </OptionGroups>
 EOL
 
-  roaming_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/AppData/Roaming/Autodesk/Neutron Platform/Options"
+  local roaming_="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/AppData/Roaming/Autodesk/Neutron Platform/Options"
   #
   mkdir -p "$roaming_"
+  # configuration modfication goes here
+  network_issue_protein_assets $cfg
   #
   cp $cfg "$roaming_"
 }
@@ -112,6 +114,11 @@ function glx_setup () {
       glx_config_generator "VirtualDeviceGLCore"
       ;;
   esac
+}
+
+function network_issue_protein_assets() {
+  sed -ie "5i <NetworkOptionGroup SchemaVersion=\"2\" ToolTip=\"These are a set of options that are used for network access.\" UserName=\"Network\"> \n\
+\t\t<SSLVerifyPeerOptionId ToolTip=\"Verify that the Autodesk Fusion 360 client can validate the server SSL Certificate.\" UserName=\"Server Verification\" Value=\"TrustAllServers\"/></NetworkOptionGroup>" $cfg
 }
 
 function install_webview2() {
@@ -230,7 +237,7 @@ case $1 in
     authorize
     ;;
   exp)
-    force_windows_version
-    #experimental
+    #force_windows_version
+    experimental
     ;;
 esac
