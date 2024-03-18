@@ -160,19 +160,22 @@ function get_production_id() {
 }
 
 function asdkidmgr_opener () {
-local desktop_file="$DEFAULT_WORK_DIR_CACHE/asdkidmgr_opener.desktop"
+local adskidmgr=adskidmgr
+local filename=$adskidmgr-opener.desktop
+local desktop_file="$DEFAULT_WORK_DIR_CACHE/$filename"
+local autodesk_desktop_install_path=$HOME/.local/share/applications/autodesk
   if [ ! -f "$desktop_file" ]; then
     cat > $desktop_file << EOL
 [Desktop Entry]
 Type=Application
-Name=adskidmgr Scheme Handler
-Exec=env WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "C:\Program Files\Autodesk\webdeploy\production\"$(get_production_id)"\Autodesk Identity Manager\AdskIdentityManager.exe" %u
+Name=$adskidmgr Scheme Handler
+Exec=env WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "C:\Program Files\Autodesk\webdeploy\production\\$(get_production_id)\Autodesk Identity Manager\AdskIdentityManager.exe" %u
 StartupNotify=false
 MimeType=x-scheme-handler/adskidmgr;
 EOL
-xdg-mime default adskidmgr-opener.desktop x-scheme-handler/adskidmgr
-  mkdir -p .local/share/Autodesk
-  cp $desktop_file .local/share/autodesk/
+  xdg-mime default adskidmgr-opener.desktop x-scheme-handler/adskidmgr
+  desktop-file-install --dir=$autodesk_desktop_install_path $desktop_file
+  update-desktop-database $autodesk_desktop_install_path
   fi
 }
 
@@ -238,6 +241,7 @@ case $1 in
     ;;
   exp)
     #force_windows_version
-    experimental
+    #experimental
+    asdkidmgr_opener
     ;;
 esac
