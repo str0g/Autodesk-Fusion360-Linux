@@ -76,6 +76,8 @@ function setup_winetricks() {
         WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q sandbox win11 &&
         WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q $DEFAULT_GFX atmlib cjkfonts corefonts dotnet48 fontsmooth=rgb gdiplus msxml4 msxml6 vcrun2022 winhttp &&
         force_windows_version
+        ### fixes goes here
+        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q bcp47langs=disabled
     fi
 }
 
@@ -240,8 +242,6 @@ case $1 in
     authorize
     ;;
   exp)
-    #force_windows_version
-    #experimental
-    asdkidmgr_opener
+    experimental
     ;;
 esac
