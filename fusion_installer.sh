@@ -15,6 +15,7 @@ DOWNLOADS="$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/users/$USER/Downloads"
 URL_WINETRICKS=https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
 URL_WEBVIEW2=https://github.com/aedancullen/webview2-evergreen-standalone-installer-archive/releases/download/109.0.1518.78/MicrosoftEdgeWebView2RuntimeInstallerX64.exe
 URL_FUSION=https://dl.appstreaming.autodesk.com/production/installers/Fusion%20Admin%20Install.exe
+
 # GFX options
 # galliumnine - dx9
 # dxvk dx9/10/11 (vulkan)
@@ -65,6 +66,21 @@ function download_webview2_installer() {
 
 function download_fusion_installer() {
   download $URL_FUSION $DEFAULT_FUSION_INSTALLER_NAME
+}
+
+function replace_file_with_backup() {
+  local infile="$1"
+  local outfile="$2"
+  local backup_file="$outfile.backup"
+  if [ ! -f "$infile" ]; then
+    echo "Files does not exist $infile"
+    exit 1
+  fi
+  if [ ! -f "$backup_file" ];
+  then
+    cp -p "$outfile" "$backup_file"
+  fi
+  cp "$infile" "$outfile"
 }
 
 function force_windows_version() {
@@ -121,6 +137,17 @@ function glx_setup () {
 function network_issue_protein_assets() {
   sed -ie "5i <NetworkOptionGroup SchemaVersion=\"2\" ToolTip=\"These are a set of options that are used for network access.\" UserName=\"Network\"> \n\
 \t\t<SSLVerifyPeerOptionId ToolTip=\"Verify that the Autodesk Fusion 360 client can validate the server SSL Certificate.\" UserName=\"Server Verification\" Value=\"TrustAllServers\"/></NetworkOptionGroup>" $cfg
+}
+
+function issue_qt6_webengine() {
+  local QT6_WEBENGINECORE_URL="https://raw.githubusercontent.com/cryinkfly/Autodesk-Fusion-360-for-Linux/main/files/extras/patched-dlls/Qt6WebEngineCore.dll.7z"
+  download $QT6_WEBENGINECORE_URL Qt6WebEngineCore.dll.7z
+  if [ ! -f $DEFAULT_WORK_DIR_CACHE/Qt6WebEngineCore.dll ];
+  then
+    7z e -o$DEFAULT_WORK_DIR_CACHE $DEFAULT_WORK_DIR_CACHE/Qt6WebEngineCore.dll.7z
+  fi
+  local Qt6WebEngineCoreFile=$(find $DEFAULT_WORK_DIR_WINE_PREFIX -name Qt6WebEngineCore.dll)
+  replace_file_with_backup $DEFAULT_WORK_DIR_CACHE/Qt6WebEngineCore.dll "$Qt6WebEngineCoreFile"
 }
 
 function install_webview2() {
@@ -205,6 +232,7 @@ function install_action() {
     asdkidmgr_opener
 #    install_fusion_addons
     force_windows_version
+    issue_qt6_webengine
 }
 
 function list_all_tricks () {
