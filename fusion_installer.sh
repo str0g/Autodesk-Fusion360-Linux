@@ -150,15 +150,25 @@ function issue_qt6_webengine() {
   replace_file_with_backup $DEFAULT_WORK_DIR_CACHE/Qt6WebEngineCore.dll "$Qt6WebEngineCoreFile"
 }
 
+function issue_ai_functions() {
+  local SIAPPDLL_URL="https://raw.githubusercontent.com/cryinkfly/Autodesk-Fusion-360-for-Linux/main/files/extras/patched-dlls/siappdll.dll"
+  download $SIAPPDLL_URL siappdll.dll
+  local Qt6WebEngineCoreFile=$(find $DEFAULT_WORK_DIR_WINE_PREFIX -name Qt6WebEngineCore.dll)
+  local siappdll_path="$(dirname "$Qt6WebEngineCoreFile")/siappdll.dll"
+  if [ ! -f "$siappdll_path" ]; then
+    cp $DEFAULT_WORK_DIR_CACHE/siappdll.dll "$siappdll_path"
+  fi
+}
+
 function install_webview2() {
   force_windows_version
-  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "$DOWNLOADS/$DEFAULT_WEBVIEW_INSTALLER_NAME" /install
+  WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine "$DOWNLOADS/$DEFAULT_WEBVIEW_INSTALLER_NAME" /silent /install
 }
 
 function install_fusion() {
   local fexec="$(find "$DEFAULT_WORK_DIR_WINE_PREFIX" -name Fusion360.exe)"
   if [ ! -f "$fexec" ]; then
-    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" timeout -k 10m 9m wine "$DOWNLOADS/$DEFAULT_FUSION_INSTALLER_NAME"
+    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" timeout -k 10m 9m wine "$DOWNLOADS/$DEFAULT_FUSION_INSTALLER_NAME" --quiet
     local fexec="$(find "$DEFAULT_WORK_DIR_WINE_PREFIX" -name Fusion360.exe)"
     echo "WINEARCH=$FORCE_ARCH WINEPREFIX=\"$DEFAULT_WORK_DIR_WINE_PREFIX\" wine \"$fexec\"" >> "$DEFAULT_BOX"
     glx_setup
@@ -233,6 +243,7 @@ function install_action() {
 #    install_fusion_addons
     force_windows_version
     issue_qt6_webengine
+    issue_ai_functions
 }
 
 function list_all_tricks () {
