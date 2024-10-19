@@ -121,6 +121,7 @@ function glx_setup () {
     dxvk) # direct 11 or opengl
       # "VirtualDeviceGLCore"
       glx_config_generator "VirtualDeviceDx11"
+      echo "To enable dxvk hud extend second line in box-run.sh script with DXVK_HUD=de vinfo,fps,version,api WINEARCH=win64..."
       ;;
     galliumnine) # directx 9
       glx_config_generator "VirtualDeviceDx9"

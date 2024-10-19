@@ -64,10 +64,9 @@ Missing drawing elements on AMD hardware - use galliumnine driver (default).
 ### Why this project started?
 Every one needs fast, easy to use and maintain solution which just works.
 
-### Performance (out dated january 2024)
-For best performance (25.02.2023) set fusion to run with OpenGL and do not apply any external solutions
-
-![sample-out](https://user-images.githubusercontent.com/219793/221354633-722b0a1f-4efc-42fb-b004-5e7a3cfdeb95.png)
+### Performance
+Dxvk give the best performance on dual graphic system(amd/intel+nvidia) when discret graphic card is not primary by default.
+On amd hardware stick with galliumnine.
 
 ### Tested on
 ArchLinux with KDE
