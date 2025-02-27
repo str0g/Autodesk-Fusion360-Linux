@@ -21,7 +21,7 @@ URL_FUSION=https://dl.appstreaming.autodesk.com/production/installers/Fusion%20A
 # dxvk dx9/10/11 (vulkan)
 # vkd3d - dx12 9 (vulkan)
 # leave empty (opengl)
-DEFAULT_GFX=galliumnine
+DEFAULT_GFX=dxvk
 DEFAULT_BOX="$DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh"
 FORCE_ARCH=win64
 
@@ -229,7 +229,9 @@ function authorize() {
 }
 
 function experimental() {
-    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q dxvk
+    # WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" --self-update
+    # WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" --force -q dxvk
+    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" --force -q galliumnine
 }
 
 function install_action() {

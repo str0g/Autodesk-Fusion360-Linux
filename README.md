@@ -59,17 +59,17 @@ move current directory to .fusion_backup and jump to Installation step
 Just remove wineprefixes directory
 
 ### Know issues
-Missing drawing elements on AMD hardware - use galliumnine driver (default).
+Missing drawing elements on AMD hardware - use galliumnine driver.
 
 ### Why this project started?
 Every one needs fast, easy to use and maintain solution which just works.
 
 ### Performance
 Dxvk give the best performance on dual graphic system(amd/intel+nvidia) when discret graphic card is not primary by default.
-On amd hardware stick with galliumnine.
 
 ### Tested on
 ArchLinux with KDE
+ArchLinux with HyprLand (menu redering does not work correctly, Wine must work directly with Wayland to solve issues)
 
 ### Special thanks to
 Steve Zabka from https://github.com/cryinkfly/Autodesk-Fusion-360-for-Linux 
