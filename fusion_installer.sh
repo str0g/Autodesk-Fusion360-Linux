@@ -199,7 +199,7 @@ function get_production_id() {
   echo $current_id
 }
 
-function asdkidmgr_opener () {
+function asdkidmgr_opener() {
 local adskidmgr=adskidmgr
 local filename=$adskidmgr-opener.desktop
 local desktop_file="$DEFAULT_WORK_DIR_CACHE/$filename"
@@ -237,6 +237,47 @@ function authorize() {
   cd -
 }
 
+function install_fusion_desktop() {
+  # Notes:
+  # Opengl use mesa_glthread to gain addtional fps
+  # Exec=env mesa_glthread=true $DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh
+  local desktop_filename="$DEFAULT_WORK_DIR_CACHE/Fusion360.desktop"
+  local desktop_filename_dgpu="$DEFAULT_WORK_DIR_CACHE/Fusion360-dgpu.desktop"
+  local install_path=$HOME/Desktop
+  if [ ! -f "$desktop_filename" ]; then
+    cat > "$desktop_filename" << EOL
+[Desktop Entry]
+Comment=Fusion360 application for 3D modeling and engineering work.
+GenericName=fusion
+Name=Fusion360
+Path=$DEFAULT_WORK_DIR_WINE_PREFIX
+Exec=$DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh
+Icon=$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/Program Files/Autodesk/webdeploy/production/$(get_production_id)/Applications/Fusion/Fusion360App/Fusion360.ico
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Education;Engineering;
+EOL
+  fi
+  test -f /usr/bin/prime-run && if [ ! -f "$desktop_filename_dgpu" ]; then
+    cat > "$desktop_filename_dgpu" << EOL
+[Desktop Entry]
+Comment=Fusion360 application for 3D modeling and engineering work.
+GenericName=fusion
+Name=Fusion360-dgpu
+Path=$DEFAULT_WORK_DIR_WINE_PREFIX
+Exec=/usr/bin/prime-run $DEFAULT_WORK_DIR_WINE_PREFIX/box-run.sh
+Icon=$DEFAULT_WORK_DIR_WINE_PREFIX/drive_c/Program Files/Autodesk/webdeploy/production/$(get_production_id)/Applications/Fusion/Fusion360App/Fusion360.ico
+StartupNotify=false
+Terminal=false
+Type=Application
+Categories=Education;Engineering;
+EOL
+  fi
+  cp "$desktop_filename" "$install_path"
+  test -f "$desktop_filename_dgpu" && cp "$desktop_filename_dgpu" "$install_path"
+}
+
 function experimental() {
     # WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" --self-update
     # WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" --force -q dxvk
@@ -251,6 +292,7 @@ function install_action() {
     download_fusion_installer
     install_webview2
     install_fusion
+    install_fusion_desktop
     asdkidmgr_opener
 #    install_fusion_addons
     force_windows_version
