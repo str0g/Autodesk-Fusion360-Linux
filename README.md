@@ -40,6 +40,9 @@ Script is going to create dir tree (path can be easily changed)
 ├── cache
 │   ├── AdditiveAssistant.bundle-win64.msi
 │   ├── AirfoilTools_win64.msi
+│   ├── adskidmgr-opener.desktop
+│   ├── Fusion360.desktop
+│   ├── Fusion360-dgpu.desktop
 │   ├── Fusion360installer.exe
 │   ├── HelicalGear_win64.msi
 │   ├── login.txt
@@ -55,11 +58,14 @@ Script is going to create dir tree (path can be easily changed)
 ### Update
 move current directory to .fusion_backup and jump to Installation step
 
+### Recovery backup
+move backup folder to .fustion360 and execute ```./fusion_installer.sh``` only outcome is going to be coping from cache folder *.desktop files
+
 ### Refresh installation
 Just remove wineprefixes directory
 
 ### Know issues
-Missing drawing elements on AMD hardware - use galliumnine driver.
+
 
 ### Why this project started?
 Every one needs fast, easy to use and maintain solution which just works.
@@ -68,8 +74,9 @@ Every one needs fast, easy to use and maintain solution which just works.
 Dxvk give the best performance on dual graphic system(amd/intel+nvidia) when discret graphic card is not primary by default.
 
 ### Tested on
-ArchLinux with KDE
-ArchLinux with HyprLand (menu redering does not work correctly, Wine must work directly with Wayland to solve issues)
+ArchLinux with KDE (X11)
+ArchLinux with KDE (Wayland, input does not work correctly, Wine must work directly with Wayland to solve issues)
+ArchLinux with HyprLand (menu redering does not work correctly, input does not work correctly, Wine must work directly with Wayland to solve issues)
 
 ### Special thanks to
 Steve Zabka from https://github.com/cryinkfly/Autodesk-Fusion-360-for-Linux 

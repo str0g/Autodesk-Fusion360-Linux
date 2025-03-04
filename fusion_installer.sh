@@ -222,10 +222,10 @@ EOL
   chmod +x $desktop_script_file
   #
   xdg-mime default adskidmgr-opener.desktop x-scheme-handler/adskidmgr
+  fi
   desktop-file-install --dir=$autodesk_desktop_install_path $desktop_file
   update-desktop-database $autodesk_desktop_install_path
   cp $desktop_script_file $autodesk_desktop_install_path
-  fi
 }
 
 function authorize() {
