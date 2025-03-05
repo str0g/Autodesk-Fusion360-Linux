@@ -1,3 +1,10 @@
+## Script Overview
+
+The script automates the installation and configuration of Fusion 360 on Linux, including necessary dependencies, tweaks, dGPU detection.
+Opener script for Autodesk ID Manager authentication is working and its maintainance free, the same goes for Fusion desktop short cuts.
+
+[![Project Screenshot](doc/desktop-icons.png)](https://github.com/str0g/Autodesk-Fusion360-Linux/blob/doc_update/doc/desktop-icons.png)
+
 ## How to use
 
 ### Dependencies
@@ -7,26 +14,27 @@ Required packages
 Optional
 ```samba```
 
-### Preconfiguration
+### Graphic driver
 On the top of the script set DEFAULT_GFX to match your system or go with recommended.
 
 ### Installation
-Execute
+Execute and way ~10 minutes (AMD 5800H and 1Gbit conenction).
 ```
+chmod +x fusion_installer.sh
 ./fusion_installer.sh
 ```
 
-### Authorizatoin with fusion SSO
-#### Manual way
+### Authorizatoin with Fusion SSO
+#### Manual way(fallback mode)
 1. After Installation run .fusion/wineprefixes/box-run
 2. Click in sing-in banner
 3. Default browser should open
 4. Login, after redirection click with right mouse button to retry label which contains ```adskidmgr:/login?code=```
-5. Copy link to .fusion360/cache/login.txt
+5. Save link to .fusion360/cache/login.txt
 6. Run ```./fusion_installer.sh auth```
 7. Fusion should login.
 #### Desktop integrated way
-1. After Installation run .fusion/wineprefixes/box-run
+1. After Installation run Fusion dekstop shortcut or to debug in terminal .fusion/wineprefixes/box-run
 2. Click in sing-in banner
 3. Default browser should open
 4. Login, after redirection click sign in button
@@ -54,29 +62,34 @@ Script is going to create dir tree (path can be easily changed)
     ├── box-run.sh
 [...]
 ```
-
-### Update
-move current directory to .fusion_backup and jump to Installation step
+### Usage
+| **Command**               | **Description**                                                                   |
+|---------------------------|-----------------------------------------------------------------------------------|
+| `install`                 | Performs installation process, defualt behavior if no peremeters provided.        |
+| `update`                  | Backups currect .fusion360 and performs a fresh installation.                     |
+| `list_all_tricks`         | Lists all available Winetricks packages for Wine configuration.                   |
+| `list_installed_tricks`   | Shows currently installed Winetricks packages.                                    |
+| `auth`                    | Attempts to authorize the Fusion 360 installation using credentials.              |
+| `experimental`            | Enables experimental performance enhancements (e.g., DXVK or GalliumNine).        | 
 
 ### Recovery backup
 move backup folder to .fustion360 and execute ```./fusion_installer.sh``` only outcome is going to be coping from cache folder *.desktop files
 
-### Refresh installation
-Just remove wineprefixes directory
+### Performance
+Dxvk give the best performance. OpenGL is a option however read scripts interals how to modify start scripts it use mesa_glthread.
 
 ### Know issues
+- On one machine I had issue with setting up libraries automatically. Libraries should look like on image.
 
-
-### Why this project started?
-Every one needs fast, easy to use and maintain solution which just works.
-
-### Performance
-Dxvk give the best performance on dual graphic system(amd/intel+nvidia) when discret graphic card is not primary by default.
+[![Project Screenshot](doc/faq-libs-configuration.png)](https://github.com/str0g/Autodesk-Fusion360-Linux/blob/doc_update/doc/faq-libs-configuration.png)
 
 ### Tested on
-ArchLinux with KDE (X11)
-ArchLinux with KDE (Wayland, input does not work correctly, Wine must work directly with Wayland to solve issues)
-ArchLinux with HyprLand (menu redering does not work correctly, input does not work correctly, Wine must work directly with Wayland to solve issues)
+- ArchLinux with KDE (X11)
+- ArchLinux with KDE (Wayland, input does not work correctly, Wine must work directly with Wayland to solve issues)
+- ArchLinux with HyprLand (menu redering does not work correctly, input does not work correctly, Wine must work directly with Wayland to solve issues)
+
+### Why this project started?
+Every one needs fast, easy to use and maintain solution which just works its only 340 lines of easy maintable code!.
 
 ### Special thanks to
 Steve Zabka from https://github.com/cryinkfly/Autodesk-Fusion-360-for-Linux 
