@@ -18,7 +18,7 @@ Optional
 On the top of the script set DEFAULT_GFX to match your system or go with recommended.
 
 ### Installation
-Execute and way ~10 minutes (AMD 5800H and 1Gbit conenction).
+Execute and wait around 10 minutes (AMD 5800H and 1Gbit conenction).
 ```
 chmod +x fusion_installer.sh
 ./fusion_installer.sh
@@ -42,7 +42,7 @@ chmod +x fusion_installer.sh
 6. Fusion should login.
 
 ### Folder structure
-Script is going to create dir tree (path can be easily changed)
+Script is going to create dir tree (path can be customized)
 ```
 /home/lukasz/.fusion360/
 ├── cache
@@ -76,7 +76,7 @@ Script is going to create dir tree (path can be easily changed)
 move backup folder to .fustion360 and execute ```./fusion_installer.sh``` only outcome is going to be coping from cache folder *.desktop files
 
 ### Performance
-Dxvk give the best performance. OpenGL is a option however read scripts interals how to modify start scripts it use mesa_glthread.
+Dxvk give the best performance. OpenGL is a option however read scripts interals first to get knowladge how to modify it. OpenGL enables mesa_glthread for better performance.
 
 ### Know issues
 - On one machine I had issue with setting up libraries automatically. Libraries should look like on image.
