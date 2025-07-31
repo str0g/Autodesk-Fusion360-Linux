@@ -79,6 +79,8 @@ move backup folder to .fustion360 and execute ```./fusion_installer.sh``` only o
 Dxvk give the best performance. OpenGL is a option however read scripts interals first to get knowladge how to modify it. OpenGL enables mesa_glthread for better performance.
 
 ### Know issues
+- Data panel is blank, to resolve it change Compatibility & Troubleshooting > Qt Rendering Hardware Interface API > OpenGL
+[![Project Screenshot](doc/data-panel-fix.png)](https://github.com/str0g/Autodesk-Fusion360-Linux/blob/doc_update/doc/data-panel-fix.png)
 - On one machine I had issue with setting up libraries automatically. Libraries should look like on image.
 
 [![Project Screenshot](doc/faq-libs-configuration.png)](https://github.com/str0g/Autodesk-Fusion360-Linux/blob/doc_update/doc/faq-libs-configuration.png)
