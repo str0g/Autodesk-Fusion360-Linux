@@ -99,8 +99,8 @@ function setup_winetricks() {
 
 function reapplyfix() {
         WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q bcp47langs=disabled
-        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q msvcp140=native
-        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" sh "$DEFAULT_WORK_DIR_CACHE/winetricks" -q vcruntime140=native
+        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine reg add "HKCU\\Software\\Wine\\DllOverrides" /v msvcp140 /d native,builtin /f
+        WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine reg add "HKCU\\Software\\Wine\\DllOverrides" /v vcruntime140 /d native,builtin /f
 }
 
 function glx_config_generator() {
@@ -147,7 +147,7 @@ function network_issue_protein_assets() {
 }
 
 function issue_qt6_webengine() {
-  local QT6_WEBENGINECORE_URL="https://raw.githubusercontent.com/cryinkfly/Autodesk-Fusion-360-for-Linux/main/files/extras/patched-dlls/Qt6WebEngineCore.dll.7z"
+  local QT6_WEBENGINECORE_URL="https://raw.githubusercontent.com/cryinkfly/Autodesk-Fusion-360-for-Linux/main/files/extras/patched-dlls/Qt6WebEngineCore-06-2025.7z"
   download $QT6_WEBENGINECORE_URL Qt6WebEngineCore.dll.7z
   if [ ! -f $DEFAULT_WORK_DIR_CACHE/Qt6WebEngineCore.dll ];
   then
@@ -343,5 +343,8 @@ case $1 in
     ;;
   exp)
     experimental
+    ;;
+  install_msi)
+    WINEARCH=$FORCE_ARCH WINEPREFIX="$DEFAULT_WORK_DIR_WINE_PREFIX" wine msiexec /i "$2"
     ;;
 esac
